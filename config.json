@@ -1,0 +1,11 @@
+{
+  "sources": [
+    "./fonts",
+    "./google-fonts",
+    "./新下载字体"
+  ],
+  "inbox": "./新下载字体",
+  "port": 8765,
+  "lan": false,
+  "big_font_mb": 2
+}

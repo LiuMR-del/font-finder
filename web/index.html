@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>字体速查</title>
+<link rel="stylesheet" href="/web/style.css">
+</head>
+<body>
+<header>
+  <div class="brand">字体速查</div>
+  <nav>
+    <button data-tab="shot">📷 截图找字</button>
+    <button data-tab="wall">🔤 样张墙</button>
+    <button data-tab="hist">🕘 历史</button>
+  </nav>
+  <div id="status"></div>
+</header>
+
+<div id="toolbar">
+  <input id="text" placeholder="输入要预览的文字，如 23 JORDAN">
+  <span class="presets">
+    <button data-preset="23 JORDAN">球衣</button>
+    <button data-preset="0123456789">数字</button>
+    <button data-preset="ABCDEFG abcdefg">字母</button>
+    <button data-preset="定制文字 永字八法 2026">中文</button>
+  </span>
+  <label>字号 <input id="size" type="range" min="16" max="160"></label>
+  <label>字距 <input id="spacing" type="range" min="-10" max="40"></label>
+  <label>填充 <input id="fill" type="color"></label>
+  <label>描边 <input id="stroke" type="color"></label>
+  <label>粗细 <input id="sw" type="range" min="0" max="12"></label>
+  <label>背景 <input id="bg" type="color"></label>
+  <label>列数 <select id="cols"><option>1</option><option>2</option><option>3</option><option>4</option><option>6</option></select></label>
+</div>
+
+<main>
+  <!-- 截图找字 -->
+  <section id="tab-shot" class="tab">
+    <div id="drop">
+      <div class="big">⌘ + V 粘贴截图</div>
+      <div>也可以把图片拖到这里，或 <label class="link">选择文件<input id="file" type="file" accept="image/*" hidden></label></div>
+      <div class="muted">流程：粘贴截图 → 自动框选并识别文字 → 先在本地字体库找 → 本地没有再送去字体识别网站</div>
+    </div>
+    <div id="shotWork" hidden>
+      <div class="shotLeft">
+        <div id="cvWrap"><canvas id="cv"></canvas><div id="sel"></div></div>
+        <div class="muted">在图上拖动鼠标可以重新框选文字；框得越贴近文字越准。<button id="btnNewShot" class="link">换一张图</button></div>
+      </div>
+      <div class="shotRight">
+        <label class="field">截图里的文字（识别错了可以直接改；留空则按字形猜）
+          <input id="qtext" placeholder="如 23">
+        </label>
+        <div id="ocrInfo" class="muted"></div>
+        <button id="btnFind" class="primary">在本地字体库查找</button>
+        <div class="maskRow">
+          <div><div class="muted">程序看到的文字形状</div><img id="maskImg"></div>
+          <div id="qcolors"></div>
+        </div>
+        <label><input type="checkbox" id="useQColors" checked> 结果用截图的颜色展示</label>
+      </div>
+    </div>
+    <div id="matchInfo"></div>
+    <div id="matchGrid" class="grid"></div>
+
+    <div id="online" hidden>
+      <h3>本地没有？送去字体识别网站</h3>
+      <div class="muted">已把截图里的文字抠成干净的黑白图（下方）。点网站按钮会先复制这张图、再打开网站，
+        在网站的上传区按 <b>⌘ + V</b> 粘贴；也可以直接把下面这张图拖到网站上。这些网站覆盖几十万款字体，包括商业字体。</div>
+      <div class="row"><img id="cleanImg" alt="干净字形图" draggable="true"></div>
+      <div class="row">
+        <button class="primary" data-site="https://www.myfonts.com/pages/whatthefont">WhatTheFont ↗</button>
+        <button class="primary" data-site="https://www.whatfontis.com/">WhatFontIs ↗</button>
+        <button data-site="https://www.fontsquirrel.com/matcherator">Font Squirrel ↗</button>
+        <button id="btnSaveClean">保存这张图</button>
+      </div>
+      <div class="row muted">或者按风格在 dafont 上用你的文字浏览（勾选分类后点链接）：
+        <a id="lnkDafont" target="_blank">在 dafont 打开 ↗</a></div>
+      <div id="catChips"></div>
+      <div class="muted">找到字体后：把下载的字体（zip 也行）放进 <b>新下载字体</b> 文件夹，约 10 秒自动入库，下次本地就能直接找到。
+        定制商品属于商用，请留意网站上标注的授权。</div>
+    </div>
+  </section>
+
+  <!-- 样张墙 -->
+  <section id="tab-wall" class="tab">
+    <aside>
+      <input id="q" placeholder="搜索字体名称">
+      <label><input type="checkbox" id="hideMissing"> 隐藏缺字的字体</label>
+      <label><input type="checkbox" id="hideSystem"> 隐藏系统字体</label>
+      <label><input type="checkbox" id="favOnly"> 只看收藏</label>
+      <label><input type="checkbox" id="onePerFamily"> 每个家族只显示一个</label>
+      <label>排序 <select id="sort">
+        <option value="name">名称</option><option value="ink">由粗到细</option><option value="aspect">由窄到宽</option>
+        <option value="added">最近加入</option><option value="used">最常选用</option></select></label>
+      <div id="tagFilters"></div>
+      <button id="btnClearTags" class="link">清空标签筛选</button>
+      <div id="count" class="muted"></div>
+    </aside>
+    <div id="wall" class="grid"></div>
+  </section>
+
+  <!-- 历史 -->
+  <section id="tab-hist" class="tab">
+    <div id="histList"></div>
+  </section>
+</main>
+
+<div id="cmpBar" hidden>
+  <span>对比：</span><span id="cmpChips"></span>
+  <button id="btnCmp" class="primary">并排对比</button>
+  <button id="btnCmpClear" class="link">清空</button>
+</div>
+
+<div id="modal" hidden><div class="modalBox"><button class="close">×</button><div id="modalBody"></div></div></div>
+<div id="toast"></div>
+
+<template id="tplCard">
+  <div class="card">
+    <div class="rank"></div>
+    <div class="sample"><span class="txt"></span></div>
+    <div class="miss"></div>
+    <div class="meta"><div class="name"></div><div class="sub"></div></div>
+    <div class="acts">
+      <button data-a="fav" title="收藏">☆</button>
+      <button data-a="cmp" title="加入对比">对比</button>
+      <button data-a="copy" title="复制字体名">复制名</button>
+      <button data-a="install" title="安装到本机，PS/AI 可直接使用">安装</button>
+      <button data-a="reveal" title="在访达中显示文件">访达</button>
+      <button data-a="get" title="这个字体没有附带文件：去网上找它并获取授权" hidden>去获取 ↗</button>
+      <button data-a="info" title="详情、授权、标签">详情</button>
+    </div>
+  </div>
+</template>
+<script src="/web/app.js"></script>
+</body>
+</html>

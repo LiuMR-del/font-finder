@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+# per-machine: index, glyph atlas, caches, search history (customer screenshots)
+data/
+bin/
+config.local.json
+新下载字体/*
+!新下载字体/.gitkeep
+.zcode/
