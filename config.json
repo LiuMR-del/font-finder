@@ -2,6 +2,7 @@
   "sources": [
     "./fonts",
     "./google-fonts",
+    "./user-fonts",
     "./新下载字体"
   ],
   "inbox": "./新下载字体",
